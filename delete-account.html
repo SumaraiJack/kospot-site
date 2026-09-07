@@ -2,11 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="theme-color" content="#0B5F9E">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Delete Your Account — KosPot</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --forest:#0C351E; --amber:#E59B27; --cream:#F4F1EA; --ink:#1A1A1A; --muted:#55534E; --danger:#C62828; }
+  :root {
+    /* Cape Blue -- ChowFreshTokens in lib/theme/app_theme.dart. Matches
+       index.html. --forest is ocean blue and --amber is the app's amber;
+       the names are the old green ones and are kept so the rules below
+       did not all have to change. */
+    --forest: #0B5F9E;
+    --amber:  #FFB020;
+    --cream:  #F2F8FD;
+    --ink:    #10293D;
+    --muted:  #4A6076;
+    --danger: #E04B4B;   /* ChowFreshTokens.error */
+  }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { font-family:'Inter',sans-serif; background:var(--cream); color:var(--ink); line-height:1.6; }
   header { background:var(--forest); color:white; padding:24px; }
@@ -21,7 +33,7 @@
   ul, ol { padding-left:22px; margin-bottom:12px; }
   a { color:var(--amber); }
   .card { background:white; border-radius:16px; padding:24px; border:1px solid rgba(12,53,30,0.08); margin-bottom:20px; }
-  .danger { background:#FFF3E0; border:1px solid var(--amber); border-radius:16px; padding:20px; margin:20px 0; }
+  .danger { background:#FDF1E3; border:1px solid var(--amber); border-radius:16px; padding:20px; margin:20px 0; }
   .step { display:flex; gap:16px; margin-bottom:18px; align-items:flex-start; }
   .step-num {
     width:36px; height:36px; border-radius:50%;
