@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KosPot — Plan the week. Cook anything. Spend less.</title>
+<meta name="description" content="KosPot is South Africa's friendliest kitchen sidekick. AI meal plans, a smart pantry, budget-aware shopping lists and recipes for every diet — Mzansi-flavoured, household-friendly.">
+<meta name="keywords" content="meal planner south africa, AI meal plan, vegan halaal kosher planner, grocery budget app, smart pantry, KosPot, recipe scanner">
+<meta name="theme-color" content="#0B5F9E">
+<meta property="og:title" content="KosPot — Plan the week. Cook anything. Spend less.">
+<meta property="og:description" content="AI meal plans, smart pantry, budget shopping lists and recipes for every diet. Made in Mzansi.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/screens/home.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    /* Cape Blue — the palette the app actually ships, lifted straight from
+       ChowFreshTokens in lib/theme/app_theme.dart. The variable NAMES are the
+       old green ones on purpose: two hundred rules below reference them, and
+       renaming --forest to --ocean is a diff that changes nothing a visitor
+       can see. Only the values moved. */
+    --forest:    #0B5F9E;   /* ChowFreshTokens.forest — the anchor */
+    --forest-2:  #0A7A90;   /* lagoon — hovers and the second hue */
+    --deep:      #063F6B;   /* forestDeep — pressed states, dark panels */
+    --mango:     #FFB020;   /* amber — the accent, one per screen */
+    --mango-2:   #FFC556;
+    --mango-3:   #D98A00;   /* amberDeep — amber that has to hold text */
+    --cream:     #F2F8FD;   /* the page */
+    --cream-2:   #F8FBFE;
+    --mint:      #E3EEF7;   /* mist — tinted container fill */
+    --sand:      #F7EEDD;   /* the warm half of the palette */
+    --leaf:      #12A97C;   /* success — "in budget", "planned" */
+    --ink:       #10293D;   /* charcoal — headings */
+    --muted:     #4A6076;   /* graphite — body copy */
+    --slate:     #7D93A6;   /* captions */
+    --hairline:  #D6E4EF;
+    --paper:     #ffffff;
+    --gold:      #FFD166;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Bricolage Grotesque', 'Inter', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    color: var(--forest);
+  }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; height: auto; }
+  button { font-family: inherit; }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Nav ───────────────────────────────────────────────── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: rgba(244, 241, 234, 0.78);
+    border-bottom: 1px solid rgba(12,53,30,0.07);
+  }
+  .nav-inner {
+    max-width: 1180px; margin: 0 auto;
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800; font-size: 22px; color: var(--forest);
+    display: flex; align-items: center; gap: 10px;
+    letter-spacing: -0.02em;
+  }
+  .logo .dot {
+    width: 28px; height: 28px; border-radius: 9px;
+    background: var(--mango);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(229,155,39,0.35);
+  }
+  .nav-links { display: flex; gap: 28px; font-size: 14px; font-weight: 600; }
+  .nav-links a { color: var(--forest); opacity: 0.7; transition: opacity 0.15s; }
+  .nav-links a:hover { opacity: 1; }
+  .nav-cta {
+    background: var(--forest); color: white; font-weight: 700;
+    padding: 10px 18px; border-radius: 999px; font-size: 14px;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); background: var(--forest-2); }
+  @media (max-width: 760px) { .nav-links { display: none; } }
+
+  /* ── Hero ───────────────────────────────────────────────── */
+  .hero {
+    position: relative; overflow: hidden;
+    background: var(--cream);
+    padding: 72px 0 56px;
+  }
+  .hero::before {
+    content: ''; position: absolute;
+    top: -120px; right: -180px;
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(255,176,32,0.24) 0%, transparent 62%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: ''; position: absolute;
+    bottom: -120px; left: -120px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(11,95,158,0.18) 0%, transparent 62%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px;
+    align-items: center;
+  }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 40px; } }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: white; color: var(--forest);
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid rgba(12,53,30,0.08);
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(12,53,30,0.04);
+  }
+  .hero-eyebrow .dotanim {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--mango);
+    box-shadow: 0 0 0 0 rgba(229,155,39,0.6);
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(229,155,39,0.55); }
+    100% { box-shadow: 0 0 0 12px rgba(229,155,39,0); }
+  }
+
+  .hero h1 {
+    font-size: clamp(44px, 7vw, 88px);
+    color: var(--forest);
+    margin-bottom: 22px;
+  }
+  .hero h1 .swirl {
+    background: linear-gradient(120deg, var(--mango) 0%, #ED7B23 100%);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    font-style: italic;
+  }
+  .hero h1 .underline {
+    position: relative; white-space: nowrap;
+  }
+  .hero h1 .underline::after {
+    content: ''; position: absolute;
+    left: -2%; right: -2%; bottom: -6px;
+    height: 10px;
+    background: var(--mango);
+    border-radius: 6px;
+    opacity: 0.55;
+    z-index: -1;
+  }
+  .hero-sub {
+    font-size: clamp(17px, 1.6vw, 19px);
+    color: var(--muted); line-height: 1.6;
+    max-width: 540px; margin-bottom: 32px;
+  }
+  .hero-sub strong { color: var(--forest); font-weight: 700; }
+  .hero-cta-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 26px; border-radius: 999px;
+    font-weight: 700; font-size: 16px;
+    transition: transform 0.15s, box-shadow 0.2s, background 0.15s;
+    cursor: pointer; border: none;
+  }
+  .btn-primary {
+    background: var(--forest); color: white;
+    box-shadow: 0 10px 24px rgba(12,53,30,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); background: var(--forest-2); }
+  .btn-ghost {
+    background: white; color: var(--forest);
+    border: 1.5px solid rgba(12,53,30,0.12);
+  }
+  .btn-ghost:hover { border-color: var(--forest); }
+
+  .hero-trustline {
+    margin-top: 28px;
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-size: 13px; color: var(--muted);
+  }
+  .hero-trustline span { display: inline-flex; align-items: center; gap: 6px; }
+  .hero-trustline .tick {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--forest); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800;
+  }
+
+  /* Phone in hero */
+  .hero-stage { position: relative; display: flex; justify-content: center; }
+  .phone {
+    position: relative;
+    width: 270px; max-width: 100%;
+    border-radius: 42px;
+    background: #0a0a0a;
+    padding: 10px;
+    box-shadow:
+      0 30px 80px rgba(6,63,107,0.28),
+      0 8px 20px rgba(6,63,107,0.14),
+      inset 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  .phone::before {
+    content: ''; position: absolute;
+    top: 14px; left: 50%; transform: translateX(-50%);
+    width: 78px; height: 16px; border-radius: 999px;
+    background: #000; z-index: 2;
+  }
+  .phone img {
+    border-radius: 34px; display: block; width: 100%;
+  }
+  .hero-stage .phone {
+    transform: rotate(-2.5deg);
+    transition: transform 0.5s ease;
+  }
+  .hero-stage:hover .phone { transform: rotate(-1deg) translateY(-4px); }
+
+  /* Floating chips around the hero phone */
+  .float-chip {
+    position: absolute;
+    background: white; padding: 10px 14px;
+    border-radius: 16px;
+    box-shadow: 0 14px 30px rgba(12,53,30,0.14);
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; color: var(--forest);
+    border: 1px solid rgba(12,53,30,0.06);
+    animation: bob 5s ease-in-out infinite;
+  }
+  .float-chip.chip-1 { top: 10%; left: -8%; }
+  .float-chip.chip-2 { bottom: 14%; right: -10%; animation-delay: 1.2s; }
+  .float-chip.chip-3 { top: 50%; right: -14%; animation-delay: 2.4s; }
+  .float-chip .badge-emoji {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--cream); display: inline-flex;
+    align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+  @media (max-width: 480px) {
+    .float-chip.chip-1, .float-chip.chip-2, .float-chip.chip-3 { display: none; }
+  }
+
+  /* ── Marquee ───────────────────────────────────────────────── */
+  .marquee {
+    background: var(--forest);
+    color: var(--cream);
+    padding: 16px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 2px solid rgba(255,255,255,0.05);
+    border-bottom: 2px solid rgba(255,255,255,0.05);
+  }
+  .marquee-track {
+    display: inline-block;
+    animation: marquee 38s linear infinite;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 22px; font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+  .marquee-track span { margin-right: 56px; }
+  .marquee-track .dot { color: var(--mango); }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── Section title ───────────────────────────────────────────────── */
+  section { padding: 88px 0; }
+  .section-eyebrow {
+    display: inline-block;
+    background: rgba(229,155,39,0.16);
+    color: var(--mango);
+    font-size: 12px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.6px;
+    padding: 6px 14px; border-radius: 999px;
+    margin-bottom: 18px;
+  }
+  .section-title {
+    font-size: clamp(40px, 5.4vw, 64px);
+    max-width: 720px;
+    margin-bottom: 18px;
+  }
+  .section-lead {
+    font-size: 18px; color: var(--muted);
+    max-width: 600px; line-height: 1.65;
+    margin-bottom: 48px;
+  }
+
+  /* ── Feature deck ───────────────────────────────────────────────── */
+  .deck {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  @media (max-width: 900px) { .deck { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .deck { grid-template-columns: 1fr; } }
+
+  .card {
+    position: relative;
+    background: var(--paper);
+    border-radius: 24px;
+    padding: 26px 22px 24px;
+    border: 1px solid rgba(12,53,30,0.06);
+    box-shadow: 0 8px 22px rgba(12,53,30,0.05);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex; flex-direction: column;
+  }
+  .card:hover {
+    transform: translateY(-6px) rotate(0deg);
+    box-shadow: 0 18px 38px rgba(12,53,30,0.12);
+  }
+  .card .tile-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.4px;
+    color: var(--mango);
+    margin-bottom: 8px;
+  }
+  .card .tile-tag .swatch-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: currentColor;
+  }
+  .card h3 {
+    font-size: clamp(22px, 2vw, 26px);
+    margin-bottom: 8px;
+  }
+  .card p {
+    font-size: 14px; color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  /* Mini phone inside cards */
+  .mini-stage {
+    margin-top: auto;
+    display: flex; justify-content: center;
+    padding: 8px 0 4px;
+    position: relative;
+  }
+  .mini-phone {
+    position: relative;
+    width: 158px;
+    border-radius: 26px;
+    background: #0a0a0a;
+    padding: 6px;
+    box-shadow:
+      0 18px 36px rgba(12,53,30,0.18),
+      0 4px 10px rgba(12,53,30,0.08),
+      inset 0 0 0 1px rgba(255,255,255,0.06);
+    transition: transform 0.35s ease;
+  }
+  .mini-phone::before {
+    content: ''; position: absolute;
+    top: 9px; left: 50%; transform: translateX(-50%);
+    width: 48px; height: 10px; border-radius: 999px;
+    background: #000; z-index: 2;
+  }
+  .mini-phone img {
+    border-radius: 20px; display: block; width: 100%;
+  }
+
+  /* Color blocks + tilts — playful variety */
+  .card.c-planner { background: var(--mint); }
+  .card.c-planner .mini-phone { transform: rotate(-4deg); }
+  .card.c-planner:hover .mini-phone { transform: rotate(-1.5deg) translateY(-4px); }
+
+  .card.c-ai { background: var(--mango); }
+  .card.c-ai h3, .card.c-ai p { color: var(--forest); }
+  .card.c-ai .tile-tag { color: var(--forest); }
+  .card.c-ai p { color: rgba(12,53,30,0.78); }
+  .card.c-ai .mini-phone { transform: rotate(3deg); }
+  .card.c-ai:hover .mini-phone { transform: rotate(1deg) translateY(-4px); }
+
+  .card.c-pantry { background: var(--paper); }
+  .card.c-pantry .mini-phone { transform: rotate(-2deg); }
+  .card.c-pantry:hover .mini-phone { transform: rotate(0deg) translateY(-4px); }
+
+  .card.c-shopping {
+    background: linear-gradient(160deg, #0C351E 0%, #1A4D2E 100%);
+    color: white;
+  }
+  .card.c-shopping h3 { color: white; }
+  .card.c-shopping p { color: rgba(255,255,255,0.78); }
+  .card.c-shopping .tile-tag { color: var(--mango-2); }
+  .card.c-shopping .mini-phone { transform: rotate(4deg); }
+  .card.c-shopping:hover .mini-phone { transform: rotate(1.5deg) translateY(-4px); }
+
+  .card.c-vegan { background: var(--paper); }
+  .card.c-vegan .mini-phone { transform: rotate(-3deg); }
+  .card.c-vegan:hover .mini-phone { transform: rotate(-0.5deg) translateY(-4px); }
+  .card.c-vegan .vegan-pill {
+    position: absolute; top: 22px; right: 22px;
+    background: var(--forest); color: white;
+    font-size: 11px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    padding: 6px 12px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .card.c-vegan .vegan-pill .leaf-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--mango);
+  }
+
+  .card.c-share { background: var(--cream); }
+  .card.c-share .mini-phone { transform: rotate(2deg); }
+  .card.c-share:hover .mini-phone { transform: rotate(0deg) translateY(-4px); }
+
+  /* Confetti specks behind cards — pure CSS for fun */
+  .card::after {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: rgba(229,155,39,0.12);
+    pointer-events: none;
+  }
+  .card.c-ai::after { background: rgba(255,255,255,0.22); }
+  .card.c-shopping::after { background: rgba(229,155,39,0.18); }
+  .card.c-planner::after { background: rgba(12,53,30,0.07); }
+
+  /* ── Diets band ───────────────────────────────────────────────── */
+  .band-diets {
+    background: var(--forest);
+    color: white; text-align: center;
+    border-radius: 36px;
+    padding: 64px 24px;
+    margin: 24px;
+    position: relative; overflow: hidden;
+  }
+  .band-diets::before {
+    content: ''; position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(229,155,39,0.18) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(74,138,63,0.20) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .band-diets > * { position: relative; z-index: 1; }
+  .band-diets .section-eyebrow {
+    background: rgba(255,210,63,0.18);
+    color: var(--gold);
+  }
+  .band-diets h2 {
+    color: white;
+    font-size: clamp(36px, 4.6vw, 56px);
+    margin-bottom: 14px;
+  }
+  .band-diets p {
+    color: rgba(255,255,255,0.78);
+    max-width: 600px; margin: 0 auto 32px;
+    font-size: 17px;
+  }
+  .diet-chips {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    max-width: 760px; margin: 0 auto;
+  }
+  .diet-chip {
+    background: rgba(255,255,255,0.07);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 11px 18px; border-radius: 999px;
+    font-size: 14px; font-weight: 700;
+    transition: background 0.15s;
+  }
+  .diet-chip:hover { background: rgba(255,255,255,0.14); }
+  .diet-chip.hot {
+    background: var(--mango);
+    color: var(--forest);
+    border-color: var(--mango);
+  }
+
+  /* ── How it works ───────────────────────────────────────────────── */
+  .howto-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  @media (max-width: 800px) { .howto-grid { grid-template-columns: 1fr; } }
+  .howto-card {
+    background: var(--paper); padding: 36px 28px;
+    border-radius: 24px;
+    border: 1px solid rgba(12,53,30,0.06);
+    position: relative;
+  }
+  .howto-card .step {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 56px; font-weight: 800;
+    color: var(--mango); line-height: 1;
+    margin-bottom: 12px; display: block;
+    font-style: italic;
+  }
+  .howto-card h4 { font-size: 24px; margin-bottom: 10px; }
+  .howto-card p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+
+  /* ── Audience / quotes ───────────────────────────────────────────────── */
+  .audience-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+  }
+  @media (max-width: 800px) { .audience-grid { grid-template-columns: 1fr; } }
+  .quote-card {
+    background: var(--paper); padding: 28px;
+    border-radius: 24px;
+    border: 1px solid rgba(12,53,30,0.06);
+    box-shadow: 0 6px 18px rgba(12,53,30,0.04);
+  }
+  .quote-card .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--mango); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px;
+    margin-bottom: 14px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+  .quote-card .avatar.v2 { background: var(--forest); }
+  .quote-card .avatar.v3 { background: var(--leaf); }
+  .quote-card .quote {
+    font-size: 17px; color: var(--ink);
+    line-height: 1.55; margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .quote-card .who {
+    font-size: 13px; color: var(--muted); font-weight: 600;
+  }
+
+  /* ── Made for SA strip ───────────────────────────────────────────────── */
+  .sa-strip {
+    background: var(--mint);
+    border-radius: 28px;
+    padding: 56px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+    align-items: center;
+  }
+  @media (max-width: 800px) { .sa-strip { grid-template-columns: 1fr; padding: 36px; } }
+  .sa-strip h2 { font-size: clamp(34px, 4.2vw, 48px); margin-bottom: 16px; }
+  .sa-strip p { color: var(--muted); font-size: 16px; line-height: 1.6; margin-bottom: 20px; }
+  .sa-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .sa-tag {
+    background: white; color: var(--forest);
+    border: 1px solid rgba(12,53,30,0.08);
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 700;
+  }
+
+  /* ── Download CTA ───────────────────────────────────────────────── */
+  .download-wrap {
+    background: var(--mango);
+    border-radius: 36px;
+    padding: 64px;
+    position: relative; overflow: hidden;
+    color: var(--forest);
+  }
+  @media (max-width: 720px) { .download-wrap { padding: 40px 28px; border-radius: 24px; } }
+  .download-wrap::before {
+    content: ''; position: absolute;
+    top: -120px; left: -100px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .download-grid {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px;
+    align-items: center;
+  }
+  @media (max-width: 800px) { .download-grid { grid-template-columns: 1fr; } }
+  .download-wrap h2 {
+    color: var(--forest);
+    font-size: clamp(40px, 5vw, 64px);
+    margin-bottom: 16px;
+  }
+  .download-wrap p {
+    color: var(--forest); opacity: 0.82;
+    font-size: 18px; line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 480px;
+  }
+  .download-wrap .btn-primary { background: var(--forest); }
+  .download-wrap .micro { font-size: 12px; opacity: 0.7; margin-top: 18px; }
+  .download-stage { display: flex; justify-content: center; }
+  .download-stage .phone { transform: rotate(4deg); }
+
+  /* ── FAQ ───────────────────────────────────────────────── */
+  .faq-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  @media (max-width: 800px) { .faq-grid { grid-template-columns: 1fr; } }
+  details.faq {
+    background: var(--paper);
+    border-radius: 18px;
+    padding: 20px 24px;
+    border: 1px solid rgba(12,53,30,0.06);
+    transition: box-shadow 0.2s;
+  }
+  details.faq[open] { box-shadow: 0 10px 28px rgba(12,53,30,0.08); }
+  details.faq summary {
+    cursor: pointer;
+    font-weight: 700; font-size: 15px;
+    color: var(--forest);
+    list-style: none;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after {
+    content: '+'; font-size: 24px; color: var(--mango); font-weight: 400;
+    transition: transform 0.2s; line-height: 1; flex-shrink: 0;
+  }
+  details.faq[open] summary::after { transform: rotate(45deg); }
+  details.faq > p {
+    color: var(--muted); margin-top: 12px; line-height: 1.6;
+    font-size: 14px;
+  }
+
+  /* ── Footer ───────────────────────────────────────────────── */
+  footer {
+    background: var(--forest);
+    color: rgba(255,255,255,0.7);
+    padding: 56px 0 28px;
+    margin-top: 40px;
+  }
+  .foot-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px;
+    margin-bottom: 36px;
+  }
+  @media (max-width: 720px) { .foot-grid { grid-template-columns: 1fr 1fr; gap: 28px; } }
+  footer h5 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800; font-size: 14px;
+    color: white; text-transform: uppercase;
+    letter-spacing: 1.4px; margin-bottom: 14px;
+  }
+  footer ul { list-style: none; }
+  footer li { padding: 6px 0; font-size: 14px; }
+  footer a:hover { color: var(--mango-2); }
+  .foot-logo {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800; font-size: 28px; color: white;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .foot-tag { font-size: 14px; max-width: 320px; line-height: 1.6; }
+  .foot-bottom {
+    padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* ── Reveal on scroll ───────────────────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* ── Mobile polish ───────────────────────────────────────────────── */
+  @media (max-width: 720px) {
+    section { padding: 56px 0; }
+    .hero { padding: 48px 0 32px; }
+    .band-diets { padding: 48px 20px; margin: 16px; border-radius: 28px; }
+    .section-title { font-size: clamp(32px, 8vw, 44px); }
+    .section-lead { font-size: 16px; margin-bottom: 32px; }
+    .marquee-track { font-size: 18px; animation-duration: 26s; }
+    .mini-phone { width: 170px; }
+    .hero-trustline { gap: 14px; font-size: 12px; }
+    .download-stage { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
+    .marquee-track, .float-chip, .hero-eyebrow .dotanim { animation: none; }
+  }
+
+  /* =======================================================================
+     LIFTED FROM 21st.dev, THEN PORTED TO PLAIN CSS
+
+     Two components were pulled and read for their technique, not pasted in:
+     "Hero with Mockup" (serafimcloud) and "Colorful Bento Grid" (radu). Both
+     ship as React + Tailwind + shadcn; this site is a static page on GitHub
+     Pages with no build step, so none of that markup could be reused. What
+     was worth having was the MOTION and the SHAPE:
+
+       * hero  - a staggered fade-and-rise, each element a beat behind the one
+                 before it, over a soft glow, with the phone framed like a
+                 device mockup rather than dropped on the page;
+       * bento - tinted cards that tilt and lift under the cursor, with the
+                 label set in a rotated pill instead of sitting square.
+
+     Everything below is hand-written to match, on this site's own variables.
+     ======================================================================= */
+
+  /* -- the staggered entrance ------------------------------------------- */
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes appear-zoom {
+    from { opacity: 0; transform: scale(0.82); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .hero .reveal.in > * { animation: appear 0.7s cubic-bezier(.22,1,.36,1) both; }
+  .hero .reveal.in > .hero-eyebrow   { animation-delay: 0ms; }
+  .hero .reveal.in > h1              { animation-delay: 90ms; }
+  .hero .reveal.in > .hero-sub       { animation-delay: 200ms; }
+  .hero .reveal.in > .hero-cta-row   { animation-delay: 310ms; }
+  .hero .reveal.in > .hero-trustline { animation-delay: 420ms; }
+  .hero-stage .phone { animation: appear 0.9s cubic-bezier(.22,1,.36,1) 480ms both; }
+  .hero-stage .float-chip {
+    opacity: 0;
+    animation: appear 0.6s ease-out both, bob 6s ease-in-out infinite;
+  }
+  .hero-stage .chip-1 { animation-delay: 780ms, 780ms; }
+  .hero-stage .chip-2 { animation-delay: 900ms, 900ms; }
+  .hero-stage .chip-3 { animation-delay: 1020ms, 1020ms; }
+
+  /* The glow sits behind everything and arrives last, so the page resolves
+     rather than all landing at once. */
+  .hero-glow {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    animation: appear-zoom 1.4s ease-out 620ms both;
+  }
+  .hero-glow::before {
+    content: ''; position: absolute;
+    left: 50%; top: 22%; transform: translateX(-50%);
+    width: min(1100px, 130vw); height: 460px;
+    background:
+      radial-gradient(ellipse at center, rgba(11,95,158,0.22) 0%, transparent 68%),
+      radial-gradient(ellipse at 68% 40%, rgba(255,176,32,0.20) 0%, transparent 62%);
+    filter: blur(18px);
+  }
+
+  /* The headline, clipped out of a gradient rather than filled flat. */
+  .hero h1 {
+    background: linear-gradient(180deg, var(--ink) 0%, var(--ink) 48%, var(--forest) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .hero h1 .underline::after { z-index: -1; }
+  /* "Spend less." clips its own amber gradient. Now that the whole h1 does the
+     same trick, say so explicitly on the child instead of leaving it to
+     inherit -webkit-text-fill-color from the parent — that inheritance works,
+     but it is the kind of thing a later edit silently breaks. */
+  .hero h1 .swirl {
+    -webkit-text-fill-color: transparent;
+    background: linear-gradient(120deg, var(--mango) 0%, var(--mango-3) 100%);
+    -webkit-background-clip: text; background-clip: text;
+  }
+
+  /* -- the phone, framed as a mockup ------------------------------------ */
+  /* A lighter top edge is the whole trick: it reads as light catching the rim
+     of a real device instead of a black rectangle on a page. */
+  .phone {
+    box-shadow:
+      0 40px 90px rgba(6,63,107,0.30),
+      0 10px 24px rgba(6,63,107,0.16),
+      inset 0 1px 0 rgba(255,255,255,0.22),
+      inset 0 0 0 1px rgba(255,255,255,0.07);
+  }
+
+  /* -- the bento deck --------------------------------------------------- */
+  .deck { grid-auto-rows: 1fr; }
+  .card {
+    transition: transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s ease;
+    will-change: transform;
+  }
+  .card .tile-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 16px; border-radius: 999px;
+    background: rgba(16,41,61,0.88); color: #fff;
+    font-weight: 700; font-size: 0.78rem; letter-spacing: 0.01em;
+    transform: rotate(-2deg); transform-origin: left center;
+    transition: transform .28s cubic-bezier(.22,1,.36,1);
+  }
+  .card .tile-tag .swatch-dot { background: var(--mango); }
+  .card:nth-child(even) .tile-tag { transform: rotate(2deg); }
+  .card:hover .tile-tag { transform: rotate(0deg); }
+
+  /* The first tile takes two columns, so the grid has a shape instead of
+     being six identical boxes. */
+  @media (min-width: 901px) { .deck > .card:first-child { grid-column: span 2; } }
+
+  /* Tint the cards from the app's own hues, so the site and the app read as
+     one product rather than two designs. */
+  .card.c-planner  { background: var(--mint); }
+  .card.c-ai       { background: rgba(255,176,32,0.22); }
+  .card.c-ai h3    { color: var(--ink); }
+  .card.c-ai p     { color: var(--muted); }
+  .card.c-ai .tile-tag { background: rgba(16,41,61,0.9); color: #fff; }
+  .card.c-pantry   { background: rgba(10,122,144,0.16); }
+  .card.c-shopping { background: linear-gradient(160deg, var(--forest), var(--deep)); }
+  .card.c-shopping h3 { color: #fff; }
+  .card.c-shopping p  { color: rgba(255,255,255,0.80); }
+  .card.c-shopping .tile-tag { background: rgba(255,255,255,0.92); color: var(--deep); }
+  .card.c-vegan    { background: rgba(18,169,124,0.16); }
+  .card.c-share    { background: var(--sand); }
+
+  /* -- hover, but only where there is a cursor -------------------------- */
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover {
+      transform: translateY(-6px) rotate(1deg) scale(1.015);
+      box-shadow: -6px 10px 34px 6px rgba(6,63,107,0.14);
+    }
+    .card:nth-child(even):hover {
+      transform: translateY(-6px) rotate(-1deg) scale(1.015);
+    }
+  }
+
+  /* -- mobile ------------------------------------------------------------ */
+  /* Touch screens get no tilt and no lift. There is no hover state to leave
+     on a phone, so a tapped card would simply stay crooked. */
+  @media (hover: none) {
+    .card:hover, .card:nth-child(even):hover { transform: none; box-shadow: none; }
+    .card:hover .tile-tag { transform: rotate(-2deg); }
+    .hero-stage:hover .phone { transform: rotate(-2.5deg); }
+  }
+  @media (max-width: 900px) {
+    .hero { padding: 44px 0 40px; }
+    .hero-glow::before { height: 320px; top: 12%; }
+    .hero-stage .float-chip { display: none; }   /* they overhang the phone */
+    .deck > .card:first-child { grid-column: auto; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 18px; }
+    .hero h1 { font-size: clamp(2.1rem, 9.5vw, 3rem); }
+    .hero-sub { font-size: 1rem; }
+    .hero-cta-row { gap: 10px; }
+    .hero-cta-row .btn { flex: 1 1 100%; justify-content: center; text-align: center; }
+    .hero-trustline { gap: 10px 16px; font-size: 0.85rem; }
+    .card { padding: 20px 18px; }
+    .card .tile-tag { font-size: 0.72rem; padding: 6px 13px; }
+    .section-title { font-size: clamp(1.7rem, 7.5vw, 2.4rem); }
+  }
+
+  /* -- anyone who asked the OS for less motion gets none of it ----------- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    .hero-stage .float-chip { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <span class="dot">🥄</span> KosPot
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#diets">Diets</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#download" class="nav-cta">Get the app</a>
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div class="reveal in">
+      <span class="hero-eyebrow"><span class="dotanim"></span> Made in Mzansi · Plan · Cook · Budget</span>
+      <h1>
+        Plan the week.<br>
+        <span class="underline">Cook anything.</span><br>
+        <span class="swirl">Spend less.</span>
+      </h1>
+      <p class="hero-sub">
+        KosPot is your friendly kitchen sidekick — <strong>AI meal plans</strong>,
+        a smart pantry, budget-aware shopping lists and recipes for every
+        household. Vegan, halaal, kosher, diabetic, keto, or just "what's
+        for dinner tonight."
+      </p>
+      <div class="hero-cta-row">
+        <a href="#download" class="btn btn-primary">Get the app →</a>
+        <a href="#features" class="btn btn-ghost">See what it does</a>
+      </div>
+      <div class="hero-trustline">
+        <span><span class="tick">✓</span> Free at launch</span>
+        <span><span class="tick">✓</span> No card needed</span>
+        <span><span class="tick">✓</span> Built in Cape Town</span>
+      </div>
+    </div>
+
+    <div class="hero-stage reveal in">
+      <div class="phone">
+        <img src="assets/screens/home.jpg" alt="KosPot home screen — Plan the week. Know the cost before you shop. Vegan mode toggle visible.">
+      </div>
+      <div class="float-chip chip-1">
+        <span class="badge-emoji">🗓️</span>
+        Week planned
+      </div>
+      <div class="float-chip chip-2">
+        <span class="badge-emoji">💸</span>
+        R65.50 basket
+      </div>
+      <div class="float-chip chip-3">
+        <span class="badge-emoji">🌱</span>
+        Vegan mode on
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MARQUEE ─────────────────────────────────────────────────────── -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>BOBOTIE <span class="dot">·</span> BREDIE <span class="dot">·</span> BUNNY CHOW <span class="dot">·</span> CHAKALAKA <span class="dot">·</span> KOEKSISTERS <span class="dot">·</span> MALVA <span class="dot">·</span> POTJIE <span class="dot">·</span> SAMP &amp; BEANS <span class="dot">·</span> ROOIBOS <span class="dot">·</span> WATERBLOMMETJIE <span class="dot">·</span> SOSATIES <span class="dot">·</span> BOEREWORS <span class="dot">·</span></span>
+    <span>BOBOTIE <span class="dot">·</span> BREDIE <span class="dot">·</span> BUNNY CHOW <span class="dot">·</span> CHAKALAKA <span class="dot">·</span> KOEKSISTERS <span class="dot">·</span> MALVA <span class="dot">·</span> POTJIE <span class="dot">·</span> SAMP &amp; BEANS <span class="dot">·</span> ROOIBOS <span class="dot">·</span> WATERBLOMMETJIE <span class="dot">·</span> SOSATIES <span class="dot">·</span> BOEREWORS <span class="dot">·</span></span>
+  </div>
+</div>
+
+<!-- ── FEATURES (Bento) ─────────────────────────────────────────────────────── -->
+<section id="features">
+  <div class="wrap reveal">
+    <span class="section-eyebrow">What's inside</span>
+    <h2 class="section-title">One app. The whole kitchen.</h2>
+    <p class="section-lead">
+      Planning, pantry, shopping, recipes, community — everything you actually use, sized to fit your life and your budget.
+    </p>
+
+    <div class="deck">
+      <div class="card c-planner">
+        <span class="tile-tag"><span class="swatch-dot"></span> Weekly Planner</span>
+        <h3>Map out the week. Skip the 6pm panic.</h3>
+        <p>Tap any day, drop in breakfast, lunch or dinner. Green dots when the day is full.</p>
+        <div class="mini-stage">
+          <div class="mini-phone">
+            <img src="assets/screens/planner.jpg" alt="Weekly Menu Planner calendar inside KosPot">
+          </div>
+        </div>
+      </div>
+
+      <div class="card c-ai">
+        <span class="tile-tag"><span class="swatch-dot"></span> AI Meal Plan</span>
+        <h3>Budget in. Plan out.</h3>
+        <p>Tell KosPot your budget, days and diet — AI builds the grid and the shopping list.</p>
+        <div class="mini-stage">
+          <div class="mini-phone">
+            <img src="assets/screens/ai-plan.jpg" alt="AI Meal Plan generator with budget, days and diet options">
+          </div>
+        </div>
+      </div>
+
+      <div class="card c-pantry">
+        <span class="tile-tag"><span class="swatch-dot"></span> Smart Pantry</span>
+        <h3>Snap the fridge. Get dinner.</h3>
+        <p>AI reads ingredients from a photo and suggests three recipes you can actually cook tonight.</p>
+        <div class="mini-stage">
+          <div class="mini-phone">
+            <img src="assets/screens/pantry.jpg" alt="Smart Pantry — snap your fridge to detect ingredients">
+          </div>
+        </div>
+      </div>
+
+      <div class="card c-shopping">
+        <span class="tile-tag"><span class="swatch-dot"></span> Shopping &amp; Budget</span>
+        <h3>Rands, not guesses.</h3>
+        <p>Every item gets an estimate. The basket total updates live — green if you're under, red if you've blown it.</p>
+        <div class="mini-stage">
+          <div class="mini-phone">
+            <img src="assets/screens/shopping.jpg" alt="Shopping list with live Rand basket total">
+          </div>
+        </div>
+      </div>
+
+      <div class="card c-vegan">
+        <span class="vegan-pill"><span class="leaf-dot"></span> ON</span>
+        <span class="tile-tag"><span class="swatch-dot"></span> Vegan Mode</span>
+        <h3>One toggle, full swap.</h3>
+        <p>Flip it on the home screen — every recipe swaps meat, dairy and eggs for SA-available alternatives.</p>
+        <div class="mini-stage">
+          <div class="mini-phone">
+            <img src="assets/screens/home.jpg" alt="Vegan Mode toggle on the KosPot home screen">
+          </div>
+        </div>
+      </div>
+
+      <div class="card c-share">
+        <span class="tile-tag"><span class="swatch-dot"></span> Cook Anything</span>
+        <h3>Type a dish. Paste a link.</h3>
+        <p>Generate any recipe by name, or share an Instagram, TikTok or YouTube link straight into KosPot.</p>
+        <div class="mini-stage">
+          <div class="mini-phone">
+            <img src="assets/screens/recipe.jpg" alt="Generate Any Recipe and Link Scanner inside KosPot">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DIETS BAND ─────────────────────────────────────────────────────── -->
+<section id="diets" style="padding: 24px 0;">
+  <div class="band-diets reveal">
+    <span class="section-eyebrow">Any diet, any household</span>
+    <h2>Finally, a planner that gets it.</h2>
+    <p>Vegan, halaal, kosher, diabetic, gluten-free — the rules your household lives by are first-class options, not buried filters. Anything else? Use the Custom prompt.</p>
+    <div class="diet-chips">
+      <span class="diet-chip hot">Standard</span>
+      <span class="diet-chip">Vegan</span>
+      <span class="diet-chip">Vegetarian</span>
+      <span class="diet-chip">Anti-inflammatory</span>
+      <span class="diet-chip">Diabetic-friendly</span>
+      <span class="diet-chip">Carnivore</span>
+      <span class="diet-chip">Keto</span>
+      <span class="diet-chip">Mediterranean</span>
+      <span class="diet-chip">Gluten-free</span>
+      <span class="diet-chip">Halaal</span>
+      <span class="diet-chip">Kosher</span>
+      <span class="diet-chip">Custom prompt</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ─────────────────────────────────────────────────────── -->
+<section id="how">
+  <div class="wrap reveal">
+    <span class="section-eyebrow">How it works</span>
+    <h2 class="section-title">Three steps. One cooked dinner.</h2>
+    <div class="howto-grid">
+      <div class="howto-card">
+        <span class="step">01</span>
+        <h4>Set your budget &amp; diet</h4>
+        <p>Tell KosPot how much you want to spend this week and how you eat — standard, vegan, halaal, diabetic, keto, the lot.</p>
+      </div>
+      <div class="howto-card">
+        <span class="step">02</span>
+        <h4>AI plans your week</h4>
+        <p>A full grid of breakfasts, lunches and dinners — each with a real photo and SA-localised ingredients — drops into your planner.</p>
+      </div>
+      <div class="howto-card">
+        <span class="step">03</span>
+        <h4>Cook &amp; tick off the list</h4>
+        <p>The shopping list builds itself. Tick items as you shop. Watch the Rand total update with every step.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AUDIENCE ─────────────────────────────────────────────────────── -->
+<section style="background: var(--cream-2);">
+  <div class="wrap reveal">
+    <span class="section-eyebrow">Made for</span>
+    <h2 class="section-title">Families, students, singles, vegans — basically everyone.</h2>
+
+    <div class="audience-grid">
+      <div class="quote-card">
+        <div class="avatar">FM</div>
+        <p class="quote">"Sunday morning, I plan dinners for the whole week. The shopping list builds itself. I haven't done a 'what's for dinner' fight in months."</p>
+        <div class="who">Family of four · Pretoria</div>
+      </div>
+      <div class="quote-card">
+        <div class="avatar v2">ST</div>
+        <p class="quote">"R500 a week. KosPot actually plans around that. I cook real meals now instead of two-minute noodles every night."</p>
+        <div class="who">Student · Stellenbosch</div>
+      </div>
+      <div class="quote-card">
+        <div class="avatar v3">VG</div>
+        <p class="quote">"Every other recipe app pretends vegans don't exist. KosPot has a toggle. Every recipe just works."</p>
+        <div class="who">Vegan household · Cape Town</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SA STRIP ─────────────────────────────────────────────────────── -->
+<section>
+  <div class="wrap reveal">
+    <div class="sa-strip">
+      <div>
+        <span class="section-eyebrow">Built for SA</span>
+        <h2>Made for Mzansi, head to toe.</h2>
+        <p>
+          Bobotie, bredie and rooibos sit in the recipe library where mac-and-cheese sits everywhere else. Rand pricing throughout. Suburb-level community channels unlock when ten neighbours are active.
+        </p>
+        <div class="sa-tags">
+          <span class="sa-tag">Bobotie</span>
+          <span class="sa-tag">Bredie</span>
+          <span class="sa-tag">Bunny Chow</span>
+          <span class="sa-tag">Chakalaka</span>
+          <span class="sa-tag">Koeksisters</span>
+          <span class="sa-tag">Malva pudding</span>
+          <span class="sa-tag">Potjie</span>
+          <span class="sa-tag">Samp &amp; beans</span>
+          <span class="sa-tag">Waterblommetjie</span>
+          <span class="sa-tag">Sosaties</span>
+          <span class="sa-tag">Boerewors</span>
+          <span class="sa-tag">Umngqusho</span>
+        </div>
+      </div>
+      <div class="hero-stage" style="transform: scale(0.9);">
+        <div class="phone" style="transform: rotate(3deg);">
+          <img src="assets/screens/recipe.jpg" alt="Scan any recipe — paste a link or photograph a page, and KosPot pulls out the ingredients and steps">
+        </div>
+        <div class="float-chip" style="bottom: 8%; right: 0;">
+          <span class="badge-emoji">📸</span>
+          Scan a recipe
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DOWNLOAD ─────────────────────────────────────────────────────── -->
+<section id="download">
+  <div class="wrap reveal">
+    <div class="download-wrap">
+      <div class="download-grid">
+        <div>
+          <span class="section-eyebrow" style="background: rgba(12,53,30,0.12); color: var(--forest);">Free at launch</span>
+          <h2>Cook smarter, today.</h2>
+          <p>The whole app is free at launch — AI meal plans, smart pantry, vegan mode, share-to-app, suburb community. No card. No paywall.</p>
+          <a href="#" class="btn btn-primary">Get it on Google Play →</a>
+          <p class="micro">Android first. iOS on the roadmap. By using KosPot you agree to our <a href="terms.html" style="text-decoration: underline;">Terms</a> and <a href="privacy.html" style="text-decoration: underline;">Privacy Policy</a>.</p>
+        </div>
+        <div class="download-stage">
+          <div class="phone">
+            <img src="assets/screens/ai-plan.jpg" alt="AI Meal Plan generator inside KosPot">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ─────────────────────────────────────────────────────── -->
+<section id="faq">
+  <div class="wrap reveal">
+    <span class="section-eyebrow">Questions</span>
+    <h2 class="section-title">Quick FAQ.</h2>
+    <div class="faq-grid">
+      <details class="faq">
+        <summary>Is KosPot really free?</summary>
+        <p>Yes. At launch, every feature is unlocked with no subscription, no paywall and no card. An optional Pro tier may land later via Google Play Billing — for now everyone gets everything.</p>
+      </details>
+      <details class="faq">
+        <summary>Which diets does the planner support?</summary>
+        <p>Standard, Vegan, Vegetarian, Anti-inflammatory, Diabetic-friendly, Carnivore, Keto, Mediterranean, Gluten-free, Halaal, Kosher, plus a Custom prompt for anything else (allergies, religious rules, fasting windows).</p>
+      </details>
+      <details class="faq">
+        <summary>How accurate are the Rand price estimates?</summary>
+        <p>Each item has an estimated range based on common SA retailers. The optional "paid R__" capture lets you log what you actually paid — over time KosPot learns your real local prices.</p>
+      </details>
+      <details class="faq">
+        <summary>Can I plan on a small budget?</summary>
+        <p>Yes. Set any budget from a few hundred Rand and any number of days from 1 to 14. The plan and shopping list scale to fit.</p>
+      </details>
+      <details class="faq">
+        <summary>What's Share-to-KosPot?</summary>
+        <p>Tap "Share" on a recipe link in Instagram, TikTok, YouTube or your browser — pick KosPot from the share sheet. We scrape the recipe and add the ingredients to your library.</p>
+      </details>
+      <details class="faq">
+        <summary>How do I delete my account?</summary>
+        <p>Settings → Privacy &amp; Data → Delete account. Everything tied to you is wiped within 7 days, per POPIA.</p>
+      </details>
+      <details class="faq">
+        <summary>Where can I get the app?</summary>
+        <p>Android via Google Play (launching soon). iOS is on the roadmap.</p>
+      </details>
+      <details class="faq">
+        <summary>Can I scan a recipe from a photo?</summary>
+        <p>Yes. Paste a link from TikTok, Instagram or any blog, or photograph a printed or handwritten page — KosPot pulls out the ingredients and the method and saves it as a clean card.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────── -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-logo"><span class="dot" style="width:28px;height:28px;border-radius:9px;background:var(--mango);display:inline-flex;align-items:center;justify-content:center;font-size:18px;">🥄</span> KosPot</div>
+        <p class="foot-tag">
+          Plan the week. Cook anything. Spend less. Built in Cape Town for every Mzansi kitchen. 🇿🇦
+        </p>
+      </div>
+      <div>
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#diets">Diets</a></li>
+          <li><a href="#download">Download</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+          <li><a href="delete-account.html">Delete Account</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="mailto:chowsa.app.support@gmail.com">chowsa.app.support@gmail.com</a></li>
+          <li><a href="https://github.com/SumaraiJack" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> KosPot. All rights reserved.</span>
+      <span>Made with care in Cape Town · Flutter + Supabase</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
