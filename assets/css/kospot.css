@@ -677,7 +677,23 @@ p, li { text-wrap: pretty; }
 }
 
 .hero h1 .accent {
-  background: linear-gradient(var(--angle), var(--mango-deep), var(--blue), var(--green-deep), var(--mango-deep));
+  /* background-clip MUST be repeated here.
+   *
+   * `background` is a SHORTHAND, and background-clip is one of the
+   * properties it resets. Setting only `background:` in this later rule
+   * quietly put background-clip back to border-box, so the gradient painted
+   * the element's BOX while `color: transparent` kept the letters invisible
+   * — a solid rainbow bar where "SPEND LESS." should be. Shipped exactly
+   * that on 2026-09-21.
+   *
+   * Two brand stops only, and back to the first. Mango into petrol blue
+   * reads as KosPot; the old third green stop made it look like a stock
+   * rainbow and belonged to no part of the palette. Ending on the starting
+   * colour means the 0deg-to-360deg sweep loops with no visible seam. */
+  background: linear-gradient(var(--angle), var(--mango-deep), var(--blue), var(--mango-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 @media (prefers-reduced-motion: no-preference) {
