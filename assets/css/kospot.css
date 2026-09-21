@@ -316,10 +316,10 @@ section { padding: 52px 0; }
   position: absolute;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 16px;
-  font-size: 0.82rem;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--navy);
   background: var(--glass-strong);
@@ -336,10 +336,20 @@ section { padding: 52px 0; }
  * that covers the thing it decorates. */
 .float { display: none; }
 @media (min-width: 980px) {
-  .float      { display: flex; }
-  .float-1    { top: 16%;  left: -46px; }
-  .float-2    { top: 47%;  right: -40px; }
-  .float-3    { bottom: 12%; left: -34px; }
+  .float { display: flex; }
+
+  /* Pushed OUT and to the phone's edges.
+   *
+   * Measured on the live page at 1280px: at the old offsets each pill sat
+   * 64-71% ON TOP of the screenshot, covering the app screens it exists to
+   * advertise, and the middle one landed right across the content. The right
+   * column leaves roughly 110px of slack either side of the 280px mock, so
+   * these hang as far out as that allows and cling to the top and bottom
+   * edges rather than floating across the middle. A badge clipping a device
+   * edge reads as deliberate; one parked over the screen reads as a mistake. */
+  .float-1 { top: 4%;     left:  -96px; }
+  .float-2 { top: 48%;    right: -92px; }
+  .float-3 { bottom: 4%;  left:  -84px; }
 }
 
 /* ── Marquee ─────────────────────────────────────────────────────────────── */
