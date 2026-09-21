@@ -1,0 +1,626 @@
+/* assets/css/kospot.css — KosPot marketing site, one stylesheet for every page.
+ *
+ * The site now looks like the app instead of a generic landing page. Every
+ * colour here is lifted from the Cape Blue palette the app actually ships:
+ * the sand-to-sky canvas, the petrol-blue cards, the mango accent, the deep
+ * navy type. Cards are frosted glass, matching GlassPanel in lib/theme.
+ *
+ * MOBILE FIRST, AND MEANT IT
+ * Every rule below is written for a narrow phone and widened with min-width
+ * queries. No fixed pixel widths on anything that holds content, type scales
+ * with clamp(), and the page is pinned against sideways scroll in one place
+ * (html,body{overflow-x:hidden}) so a single wide child can never push the
+ * whole layout off-screen — which is the usual way these pages break on a
+ * phone and the usual way nobody notices.
+ */
+
+/* ── Tokens ──────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Canvas — the app's sand-to-sky wash. */
+  --sky:        #cfe4f2;
+  --sky-deep:   #b9d8ec;
+  --sand:       #f2e6c4;
+  --sand-warm:  #f7dfa6;
+  --mist:       #e8f1f8;
+
+  /* Ink */
+  --navy:       #0c3a5b;
+  --navy-deep:  #072538;
+  --body:       #37576d;
+  --muted:      #6b869a;
+
+  /* Brand */
+  --blue:       #0b5e8a;
+  --blue-soft:  #1f7bc0;
+  --petrol-a:   #0a5a86;
+  --petrol-b:   #0e7e8e;
+  --mango:      #f5a623;
+  --mango-deep: #e08c0b;
+  --green:      #2fa36b;
+  --green-deep: #1f7d51;
+  --ember-a:    #7a2e12;
+  --ember-b:    #e2761b;
+
+  /* Glass */
+  --glass:        rgba(255, 255, 255, 0.58);
+  --glass-strong: rgba(255, 255, 255, 0.78);
+  --glass-line:   rgba(255, 255, 255, 0.72);
+  --glass-edge:   rgba(12, 58, 91, 0.10);
+  --shadow:       0 18px 44px rgba(12, 58, 91, 0.13);
+  --shadow-sm:    0 8px 20px rgba(12, 58, 91, 0.10);
+
+  --radius:    22px;
+  --radius-sm: 16px;
+  --gutter:    18px;
+  --max:       1140px;
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;          /* the fixed nav must not cover anchors */
+}
+
+html, body { overflow-x: hidden; max-width: 100%; }
+
+body {
+  margin: 0;
+  font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--body);
+  line-height: 1.6;
+  font-size: 16px;
+  background: var(--mist);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The canvas. Fixed so it does not scroll with the content, exactly like the
+ * app's background sitting behind the glass panes. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(90rem 60rem at 88% -10%, var(--sand-warm) 0%, rgba(247,223,166,0) 55%),
+    radial-gradient(70rem 50rem at 6% 4%,   var(--sky-deep)  0%, rgba(185,216,236,0) 60%),
+    radial-gradient(80rem 70rem at 50% 110%, #d8ecf6 0%, rgba(216,236,246,0) 60%),
+    linear-gradient(160deg, var(--sky) 0%, var(--sand) 48%, var(--sky) 100%);
+}
+
+img { max-width: 100%; height: auto; display: block; }
+a   { color: var(--blue); text-decoration: none; }
+a:hover { color: var(--blue-soft); }
+
+h1, h2, h3, h4 {
+  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+  color: var(--navy);
+  line-height: 1.12;
+  margin: 0 0 0.5em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: clamp(2.1rem, 8.5vw, 4.1rem); }
+h2 { font-size: clamp(1.6rem, 5.6vw, 2.7rem); }
+h3 { font-size: clamp(1.1rem, 3.8vw, 1.35rem); }
+p  { margin: 0 0 1em; }
+
+:focus-visible {
+  outline: 3px solid var(--mango);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+
+.wrap {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+section { padding: 52px 0; }
+@media (min-width: 760px) { section { padding: 84px 0; } }
+
+.eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blue);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.lede {
+  font-size: clamp(1rem, 3.4vw, 1.14rem);
+  max-width: 62ch;
+  color: var(--body);
+}
+
+.center      { text-align: center; }
+.center .lede { margin-inline: auto; }
+
+/* ── Glass ───────────────────────────────────────────────────────────────── */
+
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(1.7);
+  backdrop-filter: blur(18px) saturate(1.7);
+}
+
+/* Browsers with no backdrop-filter (older Android WebView) would render the
+ * panes as barely-visible washes, so they get a solid fill instead. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass { background: rgba(255, 255, 255, 0.88); }
+}
+
+/* ── Navigation ──────────────────────────────────────────────────────────── */
+
+.nav {
+  position: fixed;
+  inset: 10px 0 auto;
+  z-index: 60;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 9px 9px 16px;
+  border-radius: 999px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 900;
+  font-size: 1.12rem;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  margin-right: auto;
+}
+
+.brand-mark {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  font-size: 17px;
+  background: linear-gradient(140deg, var(--mango), var(--mango-deep));
+  box-shadow: 0 5px 14px rgba(224, 140, 11, 0.42);
+}
+
+.nav-links { display: none; gap: 4px; }
+
+.nav-links a {
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+.nav-links a:hover { background: rgba(255, 255, 255, 0.6); }
+
+@media (min-width: 900px) { .nav-links { display: flex; } }
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  padding: 14px 24px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  text-align: center;
+}
+.btn:hover  { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: linear-gradient(140deg, var(--mango), var(--mango-deep));
+  color: #3a2504;
+  box-shadow: 0 10px 26px rgba(224, 140, 11, 0.40);
+}
+.btn-primary:hover { color: #3a2504; }
+
+.btn-ghost {
+  background: var(--glass-strong);
+  border-color: var(--glass-line);
+  color: var(--navy);
+  box-shadow: var(--shadow-sm);
+}
+.btn-ghost:hover { color: var(--navy); }
+
+.btn-sm { padding: 10px 18px; font-size: 0.9rem; }
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.center .btn-row { justify-content: center; }
+
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+
+.hero { padding-top: 96px; }
+@media (min-width: 760px) { .hero { padding-top: 132px; } }
+
+.hero-grid { display: grid; gap: 34px; }
+@media (min-width: 980px) {
+  .hero-grid {
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: center;
+    gap: 48px;
+  }
+}
+
+.hero h1 span { display: block; }
+.hero h1 .accent {
+  background: linear-gradient(120deg, var(--mango-deep), var(--blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ticks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 0;
+  margin: 22px 0 0;
+  list-style: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.ticks li::before { content: '✓ '; color: var(--green-deep); font-weight: 900; }
+
+/* Phone mock — a glass frame around a real screenshot. */
+.phone {
+  position: relative;
+  width: min(280px, 74vw);
+  margin-inline: auto;
+  padding: 10px;
+  border-radius: 38px;
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-line);
+  box-shadow: 0 30px 60px rgba(12, 58, 91, 0.22);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.phone img { border-radius: 30px; }
+
+.float {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-line);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  white-space: nowrap;
+}
+.float b { font-size: 1.05rem; }
+
+/* Hidden on phones on purpose: floated over a 74vw mock they overlap the
+ * screenshot and each other, and there is nothing to gain from a decoration
+ * that covers the thing it decorates. */
+.float { display: none; }
+@media (min-width: 980px) {
+  .float      { display: flex; }
+  .float-1    { top: 16%;  left: -46px; }
+  .float-2    { top: 47%;  right: -40px; }
+  .float-3    { bottom: 12%; left: -34px; }
+}
+
+/* ── Marquee ─────────────────────────────────────────────────────────────── */
+
+.marquee {
+  overflow: hidden;
+  padding: 12px 0;
+  margin: 8px 0 0;
+  border-block: 1px solid var(--glass-edge);
+  background: rgba(255, 255, 255, 0.34);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.marquee-track {
+  display: flex;
+  gap: 28px;
+  width: max-content;
+  animation: slide 34s linear infinite;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue);
+  white-space: nowrap;
+}
+
+@keyframes slide { to { transform: translateX(-50%); } }
+
+/* A marquee that cannot be paused is a genuine accessibility problem for
+ * vestibular disorders, so it simply stops. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+
+.grid { display: grid; gap: 16px; }
+@media (min-width: 640px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 960px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 640px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+
+.card { padding: 22px; }
+.card h3 { margin-bottom: 8px; }
+.card p  { margin: 0; font-size: 0.95rem; }
+
+.tile {
+  width: 52px; height: 52px;
+  display: grid; place-items: center;
+  border-radius: 15px;
+  font-size: 25px;
+  margin-bottom: 14px;
+  background: linear-gradient(140deg, var(--mango), var(--mango-deep));
+  box-shadow: 0 9px 20px rgba(224, 140, 11, 0.36);
+}
+.tile-blue   { background: linear-gradient(140deg, var(--petrol-a), var(--petrol-b));
+               box-shadow: 0 9px 20px rgba(10, 90, 134, 0.34); }
+.tile-green  { background: linear-gradient(140deg, var(--green), var(--green-deep));
+               box-shadow: 0 9px 20px rgba(47, 163, 107, 0.34); }
+.tile-ember  { background: linear-gradient(140deg, var(--ember-a), var(--ember-b));
+               box-shadow: 0 9px 20px rgba(122, 46, 18, 0.34); }
+
+/* Petrol card — the app's own deep teal panel. */
+.card-petrol {
+  background: linear-gradient(140deg, var(--petrol-a), var(--petrol-b));
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.92);
+}
+.card-petrol h3, .card-petrol h2 { color: #fff; }
+.card-petrol .eyebrow {
+  color: var(--mango);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+/* ── Chips ───────────────────────────────────────────────────────────────── */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.chips li {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--glass-strong);
+  border: 1px solid var(--glass-line);
+  border-radius: 999px;
+  padding: 9px 15px;
+  box-shadow: var(--shadow-sm);
+}
+.chips li.hot {
+  background: linear-gradient(140deg, var(--mango), var(--mango-deep));
+  color: #3a2504;
+  border-color: transparent;
+}
+
+/* ── Steps ───────────────────────────────────────────────────────────────── */
+
+.step-no {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 2.3rem;
+  font-weight: 900;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--mango);
+  margin-bottom: 10px;
+}
+
+/* ── Shots ───────────────────────────────────────────────────────────────── */
+
+.shots {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 760px) { .shots { grid-template-columns: repeat(3, 1fr); } }
+
+.shot { padding: 9px; }
+.shot img { border-radius: 15px; }
+.shot figcaption {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  padding: 9px 4px 3px;
+}
+
+/* ── Quotes ──────────────────────────────────────────────────────────────── */
+
+.quote { padding: 22px; }
+.quote p { font-size: 0.97rem; color: var(--navy); }
+.who { display: flex; align-items: center; gap: 11px; margin-top: 14px; }
+.who .av {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.84rem;
+  color: #fff;
+  background: linear-gradient(140deg, var(--petrol-a), var(--petrol-b));
+  flex: none;
+}
+.who span { font-size: 0.83rem; color: var(--muted); font-weight: 600; }
+
+/* ── FAQ ─────────────────────────────────────────────────────────────────── */
+
+.faq { display: grid; gap: 11px; }
+
+.faq details { padding: 4px 20px; }
+
+.faq summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+  color: var(--navy);
+  padding: 16px 30px 16px 0;
+  position: relative;
+  font-size: 0.99rem;
+}
+.faq summary::-webkit-details-marker { display: none; }
+
+.faq summary::after {
+  content: '+';
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--mango-deep);
+  line-height: 1;
+}
+.faq details[open] summary::after { content: '–'; }
+.faq details p { margin: 0 0 18px; font-size: 0.94rem; }
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.foot { padding: 40px 0 34px; margin-top: 20px; }
+
+.foot-grid { display: grid; gap: 26px; }
+@media (min-width: 760px) {
+  .foot-grid { grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 30px; }
+}
+
+.foot h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.foot a  { color: var(--navy); font-weight: 600; font-size: 0.93rem; }
+
+.foot-base {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--glass-edge);
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  justify-content: space-between;
+}
+
+/* ── Long-form pages (privacy / terms / delete account) ──────────────────── */
+
+.doc { padding-top: 96px; }
+@media (min-width: 760px) { .doc { padding-top: 128px; } }
+
+.doc-card { padding: 26px 20px; }
+@media (min-width: 760px) { .doc-card { padding: 44px 48px; } }
+
+.doc-card h2 {
+  font-size: clamp(1.3rem, 4.4vw, 1.7rem);
+  margin-top: 1.7em;
+  padding-top: 0.2em;
+}
+.doc-card h2:first-of-type { margin-top: 0.4em; }
+.doc-card h3 { margin-top: 1.4em; }
+.doc-card ul, .doc-card ol { padding-left: 1.15em; }
+.doc-card li { margin-bottom: 0.5em; }
+.doc-card a  { text-decoration: underline; }
+
+.doc-card .note {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--glass-line);
+  border-left: 4px solid var(--mango);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  margin: 20px 0;
+}
+
+/* A wide table is the single most common way a legal page breaks a phone:
+ * it refuses to shrink and drags the whole layout sideways. Scrolled inside
+ * its own box instead. */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-edge);
+  margin: 18px 0;
+}
+.doc-card table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 420px;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.5);
+}
+.doc-card th, .doc-card td {
+  text-align: left;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--glass-edge);
+  vertical-align: top;
+}
+.doc-card th { color: var(--navy); font-weight: 700; background: rgba(255,255,255,0.45); }
+.doc-card tr:last-child td { border-bottom: 0; }
+
+.updated {
+  font-size: 0.86rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin-bottom: 18px;
+  color: var(--blue);
+}
