@@ -1153,3 +1153,36 @@ p, li { text-wrap: pretty; }
     border-color: var(--mango);
   }
 }
+
+/* ── Animated emoji ──────────────────────────────────────────────────────
+   Google's Noto Animated Emoji, served as animated WebP — so this is an
+   <img>, with no player library and no JavaScript at all.
+   Re-encoded from the 512px originals: 96px, frame rate dropped, lossy.
+   That took the six of them from about 3MB of source GIF to 360KB, and they
+   all sit below the fold so they lazy-load.
+
+   NOT EVERY EMOJI HAS AN ANIMATED VERSION. The calendar (1F5D3) and the cut
+   of meat (1F969) return 404 from the Noto CDN, so those stay as text glyphs
+   — which is exactly why every animated one ships with its plain twin beside
+   it rather than replacing it.
+
+   An animated WebP cannot be paused by CSS, so reduced motion swaps in the
+   static glyph instead of trying to stop the file. */
+.e-anim {
+  width: 1.15em;
+  height: 1.15em;
+  display: block;
+  object-fit: contain;
+}
+.e-static { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .e-anim   { display: none; }
+  .e-static { display: block; }
+}
+
+.tile .e-anim   { width: 30px; height: 30px; }
+.tile .e-static { font-size: 25px; line-height: 1; }
+
+.float .e-anim   { width: 20px; height: 20px; flex: none; }
+.float .e-static { font-size: 16px; }
