@@ -46,12 +46,13 @@
 <header class="hero" id="top">
   <div class="wrap">
     <div class="hero-grid">
-      <div>
+      <div class="orb-wrap">
+        <div class="orb" aria-hidden="true"></div>
         <span class="eyebrow">Made in Mzansi · Plan · Cook · Budget</span>
-        <h1>
-          <span>Plan the week.</span>
-          <span>Cook anything.</span>
-          <span class="accent">Spend less.</span>
+        <h1 class="kinetic">
+          <span class="l1">Plan the week.</span>
+          <span class="l2">Cook anything.</span>
+          <span class="l3 accent">Spend less.</span>
         </h1>
         <p class="lede">
           KosPot is your friendly kitchen sidekick — AI meal plans, a smart
@@ -68,6 +69,7 @@
           <li>No card needed</li>
           <li>Built in Cape Town</li>
         </ul>
+        <div class="scroll-cue"><i aria-hidden="true"></i> Scroll</div>
       </div>
 
       <div class="phone">
@@ -177,22 +179,31 @@
       <h2>Three steps. One cooked dinner.</h2>
     </div>
 
-    <div class="grid grid-3" style="margin-top:34px">
-      <article class="reveal card glass">
-        <div class="step-no">01</div>
-        <h3>Set your budget &amp; diet</h3>
-        <p>Tell KosPot how much you want to spend this week and how you eat — standard, vegan, halaal, diabetic, keto, the lot.</p>
-      </article>
-      <article class="reveal card glass">
-        <div class="step-no">02</div>
-        <h3>AI plans your week</h3>
-        <p>A full grid of breakfasts, lunches and dinners — each with a real photo and SA-localised ingredients — drops into your planner.</p>
-      </article>
-      <article class="reveal card glass">
-        <div class="step-no">03</div>
-        <h3>Cook &amp; tick off the list</h3>
-        <p>The shopping list builds itself. Tick items as you shop. Watch the Rand total update with every step.</p>
-      </article>
+    <div class="index" style="margin-top:34px">
+      <div class="index-row reveal">
+        <div class="index-no">01</div>
+        <div>
+          <h3>Set your budget &amp; diet</h3>
+          <p>Tell KosPot how much you want to spend this week and how you eat — standard, vegan, halaal, diabetic, keto, the lot.</p>
+        </div>
+        <div class="index-arrow" aria-hidden="true">↗</div>
+      </div>
+      <div class="index-row reveal">
+        <div class="index-no">02</div>
+        <div>
+          <h3>AI plans your week</h3>
+          <p>A full grid of breakfasts, lunches and dinners — each with a real photo and SA-localised ingredients — drops into your planner.</p>
+        </div>
+        <div class="index-arrow" aria-hidden="true">↗</div>
+      </div>
+      <div class="index-row reveal">
+        <div class="index-no">03</div>
+        <div>
+          <h3>Cook &amp; tick off the list</h3>
+          <p>The shopping list builds itself. Tick items as you shop. Watch the Rand total update with every step.</p>
+        </div>
+        <div class="index-arrow" aria-hidden="true">↗</div>
+      </div>
     </div>
   </div>
 </section>
@@ -236,37 +247,46 @@
 </section>
 
 <!-- ── Local ─────────────────────────────────────────────────────────────── -->
-<section id="local">
-  <div class="wrap">
-    <div class="grid grid-2">
-      <div class="reveal card glass" style="padding:28px 24px">
+<section id="local" style="padding:0">
+  <div class="band-dark">
+    <div class="wrap">
+      <div class="center">
         <span class="eyebrow">Built for SA</span>
         <h2>Made for Mzansi, head to toe.</h2>
-        <p>
+        <p class="lede">
           Bobotie, bredie and rooibos sit in the recipe library where
           mac-and-cheese sits everywhere else. Rand pricing throughout.
           Suburb-level community channels unlock when ten neighbours are active.
         </p>
-        <ul class="chips" style="margin-top:16px">
-          <li>Bobotie</li><li>Bredie</li><li>Bunny chow</li><li>Chakalaka</li>
-          <li>Koeksisters</li><li>Malva pudding</li><li>Potjie</li>
-          <li>Samp &amp; beans</li><li>Waterblommetjie</li><li>Sosaties</li>
-          <li>Boerewors</li><li>Umngqusho</li>
-        </ul>
       </div>
 
-      <div class="grid" style="gap:16px">
+      <div class="medallions" style="margin-top:34px">
+        <div class="medallion"><div class="disc" aria-hidden="true">&#127858;</div><span>Bobotie</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#127858;</div><span>Bredie</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#127838;</div><span>Bunny chow</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#129367;</div><span>Chakalaka</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#127849;</div><span>Koeksisters</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#127856;</div><span>Malva</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#129371;</div><span>Potjie</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#127806;</div><span>Samp &amp; beans</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#128293;</div><span>Sosaties</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#129385;</div><span>Boerewors</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#127861;</div><span>Umngqusho</span></div>
+        <div class="medallion"><div class="disc" aria-hidden="true">&#129481;</div><span>Rooibos</span></div>
+      </div>
+
+      <div class="grid grid-3" style="margin-top:40px">
         <article class="reveal quote glass">
-          <p>“Sunday morning, I plan dinners for the whole week. The shopping list builds itself. I haven’t done a ‘what’s for dinner’ fight in months.”</p>
-          <div class="who"><div class="av">FM</div><span>Family of four · Pretoria</span></div>
+          <p>&#8220;Sunday morning, I plan dinners for the whole week. The shopping list builds itself. I haven&#8217;t done a &#8216;what&#8217;s for dinner&#8217; fight in months.&#8221;</p>
+          <div class="who"><div class="av">FM</div><span>Family of four &#183; Pretoria</span></div>
         </article>
         <article class="reveal quote glass">
-          <p>“R500 a week. KosPot actually plans around that. I cook real meals now instead of two-minute noodles every night.”</p>
-          <div class="who"><div class="av">ST</div><span>Student · Stellenbosch</span></div>
+          <p>&#8220;R500 a week. KosPot actually plans around that. I cook real meals now instead of two-minute noodles every night.&#8221;</p>
+          <div class="who"><div class="av">ST</div><span>Student &#183; Stellenbosch</span></div>
         </article>
         <article class="reveal quote glass">
-          <p>“Every other recipe app pretends vegans don’t exist. KosPot has a toggle. Every recipe just works.”</p>
-          <div class="who"><div class="av">VG</div><span>Vegan household · Cape Town</span></div>
+          <p>&#8220;Every other recipe app pretends vegans don&#8217;t exist. KosPot has a toggle. Every recipe just works.&#8221;</p>
+          <div class="who"><div class="av">VG</div><span>Vegan household &#183; Cape Town</span></div>
         </article>
       </div>
     </div>

@@ -893,3 +893,263 @@ p, li { text-wrap: pretty; }
 }
 
 .faq details[open] summary { color: var(--blue); }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   EDITORIAL
+   ═════════════════════════════════════════════════════════════════════════
+   Borrowed from the sites in the reference video, translated into KosPot's
+   own warm Cape Blue palette rather than copied wholesale:
+
+     • an oversized, deliberately OFF-GRID headline instead of a neat block
+     • a big soft gradient orb sitting BEHIND the type, so the words and the
+       colour overlap and the page has depth instead of layers stacked flatly
+     • numbered index rows with hairline rules and an arrow, replacing three
+       identical cards — an editorial device that reads far more expensive
+     • one full-bleed DARK band, because a page that is bright the whole way
+       down has no rhythm and nothing stands out
+     • a scroll cue, so the fold does not look like the whole page
+
+   All of it is still plain CSS, still mobile-first, still gated on
+   prefers-reduced-motion.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── The orb ─────────────────────────────────────────────────────────────
+   Deliberately un-clickable and hidden from screen readers: it is colour,
+   not content. Sits behind the headline via a negative z-index on a
+   positioned parent. */
+.orb-wrap { position: relative; }
+
+.orb {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(8px);
+  opacity: 0.85;
+  background:
+    radial-gradient(circle at 32% 30%, #ffe9c2 0%, rgba(255,233,194,0) 58%),
+    radial-gradient(circle at 70% 26%, #ffd0a8 0%, rgba(255,208,168,0) 55%),
+    radial-gradient(circle at 74% 74%, #bcd9f2 0%, rgba(188,217,242,0) 60%),
+    radial-gradient(circle at 26% 76%, #f7c9b0 0%, rgba(247,201,176,0) 58%),
+    conic-gradient(from 210deg, #f9d9a8, #f3c0a6, #cfe0f5, #ffe6bd, #f9d9a8);
+}
+
+.hero .orb {
+  width: min(78vw, 460px);
+  aspect-ratio: 1;
+  top: 38%;
+  left: 52%;
+  translate: -50% -50%;
+}
+@media (min-width: 980px) {
+  .hero .orb { width: 520px; top: 46%; left: 38%; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .orb { animation: orb-breathe 22s ease-in-out infinite alternate; }
+  @keyframes orb-breathe {
+    from { scale: 1;    rotate: 0deg; }
+    to   { scale: 1.09; rotate: 26deg; }
+  }
+}
+
+/* ── Kinetic headline ────────────────────────────────────────────────────
+   Each line is indented differently so the block reads as a designed
+   composition rather than a centred paragraph. The indents are in `em`, so
+   they scale with the type and never collide on a narrow screen. */
+.kinetic {
+  /* 9.8vw, not 12.5vw, and NO nowrap.
+   *
+   * The longest line is "Cook anything." — about 8.1 characters' width per
+   * em in uppercase Fraunces. On a 320px phone the usable width after the
+   * gutter is roughly 284px, which caps the type at about 35px before the
+   * line runs past the edge. Since html,body pin overflow-x shut, an
+   * oversized line would be CLIPPED rather than scrollable: the words would
+   * simply be cut off with nothing to show the reader they are missing.
+   * 9.8vw lands at ~31px there, and dropping nowrap means that even if a
+   * future edit lengthens a line it wraps and stays readable instead. */
+  font-size: clamp(1.9rem, 9.8vw, 5.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+.kinetic span { display: block; }
+.kinetic .l2 { margin-left: 0.3em; }
+.kinetic .l3 { margin-left: 0.12em; }
+
+@media (min-width: 980px) {
+  .kinetic { font-size: clamp(3.2rem, 5.4vw, 5rem); }
+  .kinetic .l2 { margin-left: 1.1em; }
+  .kinetic .l3 { margin-left: 0.4em; }
+}
+
+/* ── Scroll cue ──────────────────────────────────────────────────────── */
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 26px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.scroll-cue i {
+  width: 1px;
+  height: 26px;
+  background: linear-gradient(var(--mango), transparent);
+  display: block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue i { animation: cue 1.8s ease-in-out infinite; transform-origin: top; }
+  @keyframes cue {
+    0%, 100% { scale: 1 0.4; opacity: 0.4; }
+    50%      { scale: 1 1;   opacity: 1; }
+  }
+}
+
+/* ── Numbered index rows ─────────────────────────────────────────────────
+   Three identical cards said "three things". Numbered rules say "a sequence",
+   which is what the section is actually describing. */
+.index { border-top: 1px solid var(--glass-edge); }
+
+.index-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 16px;
+  padding: 22px 4px;
+  border-bottom: 1px solid var(--glass-edge);
+  transition: padding-inline 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              background 0.3s ease;
+}
+@media (min-width: 760px) {
+  .index-row { gap: 30px; padding: 30px 6px; align-items: center; }
+}
+
+.index-no {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(1.5rem, 6vw, 2.3rem);
+  font-weight: 900;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--mango);
+  min-width: 2ch;
+}
+
+.index-row h3 { margin: 0 0 4px; }
+.index-row p  { margin: 0; font-size: 0.93rem; }
+
+.index-arrow {
+  font-size: 1.15rem;
+  color: var(--mango-deep);
+  align-self: center;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .index-row:hover {
+    background: rgba(255, 255, 255, 0.45);
+    padding-inline: 14px;
+  }
+  .index-row:hover .index-arrow { transform: translate(5px, -5px); }
+}
+
+/* ── Dark band ───────────────────────────────────────────────────────────
+   Full-bleed, so it breaks the page's rhythm properly instead of being one
+   more rounded rectangle on the same wash. 100vw with a negative margin is
+   the one place a horizontal overflow can creep in, which is exactly why
+   html,body pins overflow-x shut. */
+.band-dark {
+  position: relative;
+  margin-inline: calc(50% - 50vw);
+  width: 100vw;
+  padding: 62px 0;
+  color: rgba(255, 255, 255, 0.82);
+  background:
+    radial-gradient(60rem 40rem at 78% -20%, rgba(224,140,11,0.30) 0%, rgba(224,140,11,0) 62%),
+    radial-gradient(50rem 40rem at 10% 110%, rgba(14,126,142,0.45) 0%, rgba(14,126,142,0) 60%),
+    linear-gradient(160deg, #072538 0%, #0a3550 52%, #062033 100%);
+}
+@media (min-width: 760px) { .band-dark { padding: 96px 0; } }
+
+.band-dark h2, .band-dark h3 { color: #fff; }
+.band-dark .lede { color: rgba(255, 255, 255, 0.78); }
+.band-dark .eyebrow {
+  color: var(--mango);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: none;
+}
+.band-dark .quote {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.band-dark .quote p { color: rgba(255, 255, 255, 0.9); }
+.band-dark .who span { color: rgba(255, 255, 255, 0.6); }
+.band-dark .chips li {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.88);
+  box-shadow: none;
+}
+
+/* ── Medallions ──────────────────────────────────────────────────────────
+   The circular row from the reference, in KosPot's own language: the app
+   speaks in emoji, so the medallions do too. A row that scrolls on a phone
+   and spreads out on a desktop. */
+.medallions {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 0 8px;
+  margin-inline: calc(var(--gutter) * -1);
+  padding-inline: var(--gutter);
+  scroll-snap-type: x proximity;
+}
+.medallions::-webkit-scrollbar { display: none; }
+@media (min-width: 760px) {
+  .medallions {
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-inline: 0;
+    padding-inline: 0;
+    gap: 20px;
+  }
+}
+
+.medallion {
+  flex: 0 0 auto;
+  width: 104px;
+  text-align: center;
+  scroll-snap-align: center;
+}
+.medallion .disc {
+  width: 92px; height: 92px;
+  margin: 0 auto 9px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 38px;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255,255,255,0.22), rgba(255,255,255,0) 62%),
+    linear-gradient(150deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 14px 30px rgba(0,0,0,0.26);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s ease;
+}
+.medallion span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: 0.02em;
+}
+@media (hover: hover) {
+  .medallion:hover .disc {
+    transform: translateY(-6px) scale(1.05);
+    border-color: var(--mango);
+  }
+}
