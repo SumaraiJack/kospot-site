@@ -1212,3 +1212,47 @@ p, li { text-wrap: pretty; }
 
 .float .e-anim   { width: 20px; height: 20px; flex: none; }
 .float .e-static { font-size: 16px; }
+
+/* ── Delete-account steps ────────────────────────────────────────────────
+   These four classes live in delete-account.html and were styled by that
+   page's own inline <style> block. The re-skin removed those blocks in
+   favour of one shared sheet and did not carry these across, so .step-num
+   rendered as a plain block div and every step number sat ALONE on the line
+   above its own text. Found by rendering the page; the structural checks
+   could not see it, because the markup was still perfectly valid. */
+.step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  margin: 0 0 18px;
+}
+
+.step-num {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.86rem;
+  color: #3a2504;
+  background: linear-gradient(140deg, var(--mango), var(--mango-deep));
+  box-shadow: 0 6px 14px rgba(224, 140, 11, 0.34);
+  flex: none;
+}
+
+.step-text strong {
+  display: block;
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+
+.req-form {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--glass-line);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  margin: 18px 0;
+}
+.req-form p:last-child { margin-bottom: 0; }
