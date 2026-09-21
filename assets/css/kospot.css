@@ -624,3 +624,272 @@ section { padding: 52px 0; }
   margin-bottom: 18px;
   color: var(--blue);
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   MOTION
+   ═════════════════════════════════════════════════════════════════════════
+   The site was correct but static. Everything below is native CSS — no
+   GSAP, no Lenis, no IntersectionObserver: nothing to install and nothing to
+   keep updated on a site that deploys by pushing files to a branch.
+
+   Every effect is a PROGRESSIVE ENHANCEMENT and is gated twice:
+
+     @supports (animation-timeline: view())   — a browser that does not know
+        scroll-driven animations ignores the whole block and the page renders
+        exactly as it did before. That matters, because scroll-driven
+        animations are NOT Baseline yet: Chrome, Edge and Safari 18+ ship
+        them, Firefox stable still keeps them behind a flag. Written
+        unconditionally, the reveal would leave Firefox users staring at
+        opacity:0 content forever — the classic way this trick breaks a site.
+
+     @media (prefers-reduced-motion: no-preference) — movement tied to
+        scrolling is a genuine trigger for vestibular disorders. Anyone who
+        has asked their OS for less motion gets a completely still page.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Page transitions ────────────────────────────────────────────────────
+   A cross-fade between the landing page and the legal pages instead of a
+   white flash. Chromium and Safari 18.2+ honour it; Firefox ignores the
+   at-rule and navigates normally, which is the correct fallback. */
+@view-transition { navigation: auto; }
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Typography polish ───────────────────────────────────────────────────
+   balance evens out headline line lengths so a big serif heading never
+   leaves one lonely word stranded. pretty does the same for body copy by
+   preventing widows. Both are ignored where unsupported. */
+h1, h2, h3, .lede, figcaption, .faq summary { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+
+/* ── The living gradient ─────────────────────────────────────────────────
+   A custom property has no type by default, so a browser cannot interpolate
+   one, and animating it steps instead of gliding. @property gives --angle a
+   real angle type, which is the whole reason this rotation is smooth. */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.hero h1 .accent {
+  background: linear-gradient(var(--angle), var(--mango-deep), var(--blue), var(--green-deep), var(--mango-deep));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero h1 .accent { animation: hue 14s linear infinite; }
+  @keyframes hue { to { --angle: 360deg; } }
+
+  /* The canvas breathes. Very slow and very small on purpose: enough that
+     the page is not a screenshot, not enough to notice while reading. */
+  body::before { animation: drift 34s ease-in-out infinite alternate; }
+  @keyframes drift {
+    from { transform: scale(1)    translate3d(0, 0, 0); }
+    to   { transform: scale(1.07) translate3d(-1.5%, 1%, 0); }
+  }
+}
+
+/* ── Scroll reveal ───────────────────────────────────────────────────────
+   Content rises as it enters the viewport. animation-range stops it
+   finishing too late: a card still fading in by the time it reaches the
+   middle of the screen reads as slow, not smooth. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: rise-in linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 32%;
+    }
+
+    /* translate/scale, NOT transform.
+     *
+     * A running animation with fill:both wins the cascade over an ordinary
+     * declaration, so animating `transform` here would permanently outrank
+     * the `transform: translateY(-5px)` hover lift below and silently kill
+     * it on every card the reveal had touched. The independent `translate`
+     * and `scale` properties compose with `transform` instead of replacing
+     * it, so both effects work. */
+    @keyframes rise-in {
+      from { opacity: 0; translate: 0 28px; scale: 0.985; }
+      to   { opacity: 1; translate: none;   scale: 1; }
+    }
+
+    /* Grid children stagger naturally by sitting at slightly different
+       scroll positions, so no per-item delay is needed. */
+    .grid > .reveal  { animation-range: entry 2% cover 28%; }
+    .shots > .reveal { animation-range: entry 2% cover 26%; }
+
+    /* The phone drifts against the scroll — real parallax, no JavaScript. */
+    .phone {
+      animation: phone-drift linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+    @keyframes phone-drift {
+      from { translate: 0 26px;  rotate: -1.1deg; }
+      to   { translate: 0 -26px; rotate: 1.1deg; }
+    }
+  }
+}
+
+/* ── Scroll progress ─────────────────────────────────────────────────────
+   A one-element reading indicator driven by the document scroll. */
+.progress {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 3px;
+  z-index: 70;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--mango), var(--blue));
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .progress {
+      animation: grow linear both;
+      animation-timeline: scroll(root block);
+    }
+    @keyframes grow { to { transform: scaleX(1); } }
+  }
+}
+
+/* ── Micro-interactions ──────────────────────────────────────────────────
+   Small, purposeful feedback: the card acknowledges the pointer. The
+   spotlight follows the cursor through --mx/--my, set by
+   assets/js/kospot.js — the only JavaScript on the site, and the page is
+   complete without it. */
+.card, .quote, .shot, .faq details {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
+}
+
+.card::after, .quote::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    22rem 22rem at var(--mx, 50%) var(--my, 0%),
+    rgba(255, 255, 255, 0.55),
+    rgba(255, 255, 255, 0) 62%
+  );
+}
+
+@media (hover: hover) {
+  .card:hover, .quote:hover, .shot:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 26px 54px rgba(12, 58, 91, 0.19);
+    border-color: #fff;
+  }
+  .card:hover::after, .quote:hover::after { opacity: 1; }
+  .card-petrol:hover::after { opacity: 0.35; }
+
+  .shot img { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+  .shot:hover img { transform: scale(1.035); }
+
+  .chips li { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .chips li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(12, 58, 91, 0.14);
+  }
+}
+
+/* A slow sheen so the icon block is not a flat square. */
+.tile { position: relative; overflow: hidden; }
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,0.55) 50%, transparent 62%);
+  transform: translateX(-120%);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card:hover .tile::after { animation: sheen 0.75s ease forwards; }
+  @keyframes sheen { to { transform: translateX(120%); } }
+}
+
+/* ── The nav condenses once you leave the top ──────────────────────────── */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-inner {
+      animation: condense linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 140px;
+    }
+    @keyframes condense {
+      to {
+        box-shadow: 0 14px 34px rgba(12, 58, 91, 0.16);
+        background: rgba(255, 255, 255, 0.82);
+      }
+    }
+  }
+}
+
+/* ── Gallery: swipe on a phone, grid on a desktop ────────────────────────
+   Six tall screenshots stacked two-wide is a very long scroll past the same
+   thing. One swipeable row reads better and is what a thumb expects. */
+@media (max-width: 759px) {
+  .shots {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 6px;
+    /* Bleeds to the screen edges so the next card peeks — the affordance
+       that tells a thumb there is more to the right. */
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+  }
+  .shots::-webkit-scrollbar { display: none; }
+  .shot { flex: 0 0 62%; scroll-snap-align: center; }
+}
+
+/* ── Buttons catch the light ────────────────────────────────────────────── */
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.45) 50%, transparent 60%);
+  transform: translateX(-130%);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .btn-primary:hover::after { animation: sheen 0.7s ease forwards; }
+}
+
+/* ── The FAQ opens smoothly ──────────────────────────────────────────────
+   interpolate-size and ::details-content let a details panel animate from
+   nothing to its real height, which CSS could not do for years. Ignored
+   where unsupported, so the panel simply snaps open as it always did. */
+@media (prefers-reduced-motion: no-preference) {
+  :root { interpolate-size: allow-keywords; }
+
+  .faq details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: block-size 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.28s ease,
+                content-visibility 0.34s allow-discrete;
+  }
+  .faq details[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+}
+
+.faq details[open] summary { color: var(--blue); }
